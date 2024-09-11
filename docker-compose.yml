@@ -9,7 +9,7 @@ services: # Each object in this key defines a service, a.k.a container. This sec
         # docker-message-server -> this image name should be same as your jar name
         image: docker-message-server:latest # Tells Docker which name it should give to the image when build-features are used. Otherwise, it’s searching for this image in the library or remote-registry.
         ports:
-            - 18888:8888 #- "$LOCAL_PORT:$DOCKER_PORT"
+            - 7777:7777 #- "$LOCAL_PORT:$DOCKER_PORT"
         networks: # This is the identifier of the named networks to use. A given name-value must be listed in the networks section.
             - custom-spring-cloud-network
         restart: always
@@ -21,7 +21,7 @@ services: # Each object in this key defines a service, a.k.a container. This sec
             dockerfile: Dockerfile
         image: docker-product-server:latest
         ports:
-            - 19999:9999
+            - 9999:9999
         networks:
             - custom-spring-cloud-network
         restart: on-failure #unless-stopped

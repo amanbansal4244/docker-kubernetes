@@ -1,35 +1,5 @@
 # Docker Advanced Assignment
-This document provides an overview of the tasks performed during the Docker assignment. The assignment focused on optimizing Dockerfiles, managing Docker networks and volumes, and implementing security best practices.
-
-
-## 1. Write a `Dockerfile` to Containerize the Application
-
-```
-# Specifies the parent image for which we’re building the current image. Here we’re using JDK 17 to do that.
-FROM openjdk:17
-
-USER root
-# Set the working directory
-WORKDIR /apps
-
-# The application's jar file
-ARG JAR_FILE=target/docker-basic-assignment-*.jar
-
-# Copy directories or files from the source directory and add them to the file system of the image at the path. 
-# Here we need to copy our application .jar file from the target folder.
-ADD ${JAR_FILE} /apps/docker-basic-assignment.jar
-
-
-# This command informs docker that the container listens to this port at the run time. Our spring boot application port is 8080.
-EXPOSE 8080
-
-# This command allows us to specify the command which docker uses to run our application. Here we need to run the generated jar file. 
-# So we need to specify the command java -jar /apps/docker-basic-assignment.jar to run our application.
-ENTRYPOINT ["java","-jar","/apps/docker-basic-assignment.jar"]
-
-
-
-```
+The assignment focused on optimizing Docker files, managing Docker networks and volumes, and implementing security best practices.
 
 
 ## 2. Optimize a `Dockerfile` for Build Speed and Image Size
@@ -38,7 +8,43 @@ ENTRYPOINT ["java","-jar","/apps/docker-basic-assignment.jar"]
 
 The Dockerfile was optimized by using multi-stage builds and reducing the final image size. Here is the optimized Dockerfile:
 
-   
+```
+#Stage 1
+# initialize build and set base image for first stage
+FROM maven:3.8.5-openjdk-17 as stage1
+
+# speed up Maven JVM a bit
+ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+
+USER root
+
+# set working directory
+WORKDIR /app
+
+# copy your other files
+COPY . .
+
+# compile the source code and package it in a jar file
+#RUN mvn clean install -Dmaven.test.skip=true
+
+#Stage 2
+# set base image for second stage
+FROM openjdk:17-alpine
+
+# set deployment directory
+WORKDIR /app
+
+# copy over the built artifact from the maven image
+COPY --from=stage1 /app/target/docker-message-server-*.jar /app
+
+# This command informs docker that the container listens to this port at the run time. Our spring boot application port is 8080.
+EXPOSE 7777
+
+# This command allows us to specify the command which docker uses to run our application. Here we need to run the generated jar file. 
+# So we need to specify the command java -jar /apps/docker-basic-assignment.jar to run our application.
+ENTRYPOINT ["java","-jar","docker-message-server.jar"]
+
+```
    
 ## 3. Setup a Custom Docker Network
 
@@ -56,7 +62,7 @@ services:
             dockerfile: Dockerfile
         image: message-server:latest 
         ports:
-            - 18888:8888
+            - 7777:7777
         networks: 
             - custom-spring-cloud-network
         restart: always
@@ -67,7 +73,7 @@ services:
             dockerfile: Dockerfile
         image: product-server:latest
         ports:
-            - 19999:9999
+            - 9999:9999
         networks:
             - spring-cloud-network
         restart: on-failure #unless-stopped

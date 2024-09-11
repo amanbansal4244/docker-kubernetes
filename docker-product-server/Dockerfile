@@ -1,33 +1,33 @@
-# Specifies the parent image for which we’re building the current image. Here we’re using JDK 17 to do that.
-#FROM openjdk:17
+#Stage 1
+# initialize build and set base image for first stage
+FROM maven:3.8.5-openjdk-17 as stage1
 
-# install the image of the Maven – JDK version.
-FROM maven:3.8.5-openjdk-17
+# speed up Maven JVM a bit
+ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
 USER root
 
-# Set the path of working directory
+# set working directory
 WORKDIR /app
 
-# copy all the files inside the project directory to the container.
+# copy your other files
 COPY . .
 
-# execute a command-line inside the container: mvn clean install to install the dependencies in pom.xml.
-#RUN mvn clean install
+# compile the source code and package it in a jar file
+#RUN mvn clean install -Dmaven.test.skip=true
 
-# run script mvn spring-boot:run after the image is built.
-#CMD mvn spring-boot:run
+#Stage 2
+# set base image for second stage
+FROM openjdk:17-alpine
 
-# The application's jar file
-ARG JAR_FILE=target/docker-product-server-*.jar
+# set deployment directory
+WORKDIR /app
 
-# Copy the JAR file from the build context into the Docker image
-# this will get copied under WORKDIR path which is /app
-COPY ${JAR_FILE} docker-product-server.jar
-
+# copy over the built artifact from the maven image
+COPY --from=stage1 /app/target/docker-product-server-*.jar /app
 
 # This command informs docker that the container listens to this port at the run time. Our spring boot application port is 8080.
-#EXPOSE 8080
+EXPOSE 9999
 
 # This command allows us to specify the command which docker uses to run our application. Here we need to run the generated jar file. 
 # So we need to specify the command java -jar /apps/docker-basic-assignment.jar to run our application.
