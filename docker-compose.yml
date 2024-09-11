@@ -6,7 +6,8 @@ services: # Each object in this key defines a service, a.k.a container. This sec
         build: # If given, docker-compose is able to build an image from a Dockerfile
             context: docker-message-server # If given, it specifies the build-directory, where the Dockerfile is looked-up.
             dockerfile: Dockerfile # If given, it sets an alternate name for a Dockerfile. This is optional.
-        image: message-server:latest # Tells Docker which name it should give to the image when build-features are used. Otherwise, it’s searching for this image in the library or remote-registry.
+        # docker-message-server -> this image name should be same as your jar name
+        image: docker-message-server:latest # Tells Docker which name it should give to the image when build-features are used. Otherwise, it’s searching for this image in the library or remote-registry.
         ports:
             - 18888:8888 #- "$LOCAL_PORT:$DOCKER_PORT"
         networks: # This is the identifier of the named networks to use. A given name-value must be listed in the networks section.
@@ -18,7 +19,7 @@ services: # Each object in this key defines a service, a.k.a container. This sec
         build:
             context: docker-product-server
             dockerfile: Dockerfile
-        image: product-server:latest
+        image: docker-product-server:latest
         ports:
             - 19999:9999
         networks:
