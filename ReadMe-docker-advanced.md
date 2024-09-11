@@ -90,7 +90,7 @@ networks:
  **To check build-file for syntax-errors**:
 
     ```bash
-    docker-compose config
+    docker compose config
     ```
 
 **Start the Docker Daemon**:

@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.8' # Specifies which format version should be used. This is a mandatory field. Here we use the newer version, whereas the legacy format is ‘1’.
 
 services: # Each object in this key defines a service, a.k.a container. This section is mandatory.
     message-server:
@@ -22,7 +22,7 @@ services: # Each object in this key defines a service, a.k.a container. This sec
         ports:
             - 19999:9999
         networks:
-            - spring-cloud-network
+            - custom-spring-cloud-network
         restart: on-failure #unless-stopped
         
 networks: #In this section, we’re specifying the networks available to our services. In this example, we let docker-compose create a named network of type ‘bridge’ for us. If the option external is set to true, it will use an existing one with the given name.
