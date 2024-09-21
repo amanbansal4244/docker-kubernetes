@@ -1,0 +1,17 @@
+
+server:
+  port: 8080
+  servlet:
+    context-path: /spring-mongo-service
+    
+spring:
+  data:
+    mongodb:
+      host: '${MONGO_HOST}' # this will be name of our Mongo-DB container which we have created from docker-compose.yml file
+      database: '${MONGO_DB}'
+      port: '${MONGO_PORT}'
+      username: '${MONGO_USERNAME}'
+      password: '${MONGO_PASSWORD}'
+
+        
+  

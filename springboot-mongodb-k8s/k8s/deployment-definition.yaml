@@ -1,0 +1,62 @@
+---
+#This is the version of the Kubernetes API you're using to create the objects. Depending on what we are trying to create we must use the right API version. 
+apiVersion: apps/v1
+
+#The kind refers to the type of object we are trying to create which in this case happens to be a deployment. Some other possible values here could be replica set or pod or service
+kind: Deployment
+
+#Meta data about pod-object, in this case: deployment
+metadata:
+  #Name of your deployment and this should be unique key of the deployment instance
+  name: my-docker-basic-assignment-deployment
+  #we can add any key-value pair under labels
+  labels:
+    app: docker-basic-assignment-app
+    #This is optional. Say for example there are hundreds of pods running a front end application and hundreds of pods running a backend application or a database. It will be difficult for you to group these parts once they are deployed. If you label them now as frontend backend or database you will be able to filter the parts. Based on this label at a later point in time. 
+    tier: back-end
+
+#Some more information about your deployment. The spec section defines what's inside the object we are creating.
+spec:
+  #We create a template section under spec to provide a pod template to be used by the replication controller to create replicas.
+  #POD ke bare mai information, jo deployment se POD bnega, 
+  template:
+    #Meta data about pod
+    metadata:
+      #pod-label
+      labels:
+        #Apply this label to pods and default deployment label selctor to this value
+        #this should be same value as above under path selector -> matchLabels -> app
+        app: docker-basic-assignment-app
+    
+    #Some more information about your container. Also, we can multiple container in one POD
+    spec:
+      #containers is the list of object or container.
+      containers:
+        #conatiner name
+      - name: my-docker-basic-assignment-container
+        #container image-name:version-name
+        image: 244244/docker-basic-assignment:v6
+        #container port
+        ports:
+        - containerPort: 8080
+        
+  # 2 pods should exist at all the times
+  replicas: 2
+  selector:
+    matchLabels:
+      # The match labels selector simply matches the labels specified under it to the labels on the pod.
+      # This should be same value as below under path template -> metadata -> labels -> app
+      app: docker-basic-assignment-app
+
+
+#Question: The role of the replica set is to monitor the pods and if any of them were to fail deploy new ones. 
+#The replica set is in fact a process that monitors the parts. Now how does the replica set know what parts to monitor? 
+#There could be hundreds of other parts in the cluster running different applications.
+#Answer: This is where labeling our pods during creation comes in handy. We could now provide these labels as a filter for replica set. 
+#Under the selector section we use the match labels filter and provide the same label that we used while creating the pods. 
+#This way the replica set knows which pods to monitor.
+#The same concept of labels and selectors is used in many other places throughout Kubernetes.
+
+        
+        
+        

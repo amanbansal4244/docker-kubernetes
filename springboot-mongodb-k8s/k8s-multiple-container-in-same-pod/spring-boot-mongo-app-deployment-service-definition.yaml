@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: springboot-mongodb-k8s-app-service
+  labels:
+    app: springboot-mongodb-k8s-app
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80 # this is incoming for our application
+      targetPort: 8080 # our application is listening on port 8080
+  selector:
+    app: springboot-mongodb-k8s-app  
+    
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: springboot-mongodb-k8s-app-deployment
+  labels:
+    app: springboot-mongodb-k8s-app
+    tier: back-end
+
+spec:
+  template:
+    metadata:
+      labels:
+        app: springboot-mongodb-k8s-app
+    
+    spec:
+      containers:
+      - name: mongo-app
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+          name: mongo-app
+        env:
+           - name: MONGO_INITDB_ROOT_USERNAME
+             valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: username
+           - name: MONGO_INITDB_ROOT_PASSWORD
+             valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: password
+      - name: springboot-mongodb-k8s-app-container
+        image: 244244/springboot-mongodb-k8s-app:v1
+        #imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        # this tells, jab aap container run kro to application ko below enviroment varible provide kro
+        env:
+            - name: MONGO_USERNAME # this name will be exported and we will use same name in our application.yml file
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret # check file 'mongo-db-secret.yaml' and metadata -> name
+                  key: username # check file 'mongo-db-secret.yaml' and data -> username
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: password
+            - name: MONGO_DB
+              valueFrom:
+                # here, we need to give config file meta data name. 
+                # Ki konsi config file se hume enviorment varible ko read krna h and app ko provide krna h
+                configMapKeyRef:
+                  name: mongo-conf  # check file 'mongo-db-config.yaml' and metadata -> name
+                  key: database # check file 'mongo-db-config.yaml' and data -> database
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-conf 
+                  key: host
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-conf 
+                  key: port
+  replicas: 2
+  selector:
+    matchLabels:
+      app: springboot-mongodb-k8s-app
+        

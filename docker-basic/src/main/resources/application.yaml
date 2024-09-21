@@ -1,0 +1,15 @@
+
+server:
+  port: 8080
+  servlet:
+    context-path: /spring-mongo-service
+    
+spring:
+  data:
+    mongodb:
+      host: spring-boot-mongo-db  # this is name of our Mongo-DB container which we have created
+      database: docker-basic-mongo-db # can be any name
+      port: 27017
+
+        
+  

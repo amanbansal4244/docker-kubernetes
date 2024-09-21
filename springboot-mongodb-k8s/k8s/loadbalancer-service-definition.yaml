@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: docker-basic-assignment-service-app
+  labels:
+    app: docker-basic-assignment-app
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http # because we are going to send http request only.
+      port: 80
+      targetPort: 8080
+  selector:
+    # Load balance traffic across Pods matching this label selector. This should be same name of label name from file 'deployment-definition.yaml'
+    # This service will check: jo bi apps, 'docker-basic-assignment-app' ke under hogi , ye service unke liye applicable hogi.
+    app: docker-basic-assignment-app

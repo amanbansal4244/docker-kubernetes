@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  springboot-mongodb:
+    image: mongo:latest
+    container_name: "springboot-mongodb"
+    ports:
+      - 27017:27017
+      
+  spring-mongo-app:
+    # this will be our image-name:version-name
+    image: 'docker-basic:v2'
+    # build path 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # conatiner name
+    container_name: docker-basic-container
+    ports:
+     #- "$LOCAL_PORT:$DOCKER_PORT"
+      - 8080:8080
+    links:
+      - springboot-mongodb

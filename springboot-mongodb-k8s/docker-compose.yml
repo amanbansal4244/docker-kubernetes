@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  springboot-mongodb: # can be any name
+    image: mongo:latest # this image will be pulled from hub.docker.com
+    container_name: "spring-boot-mongo-db"
+    ports:
+      - 27017:27017
+      
+  springboot-mongodb-k8s-app:
+    # this will be our image-name:version-name
+    image: 'springboot-mongodb-k8s-app:v1'
+    # build path 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # conatiner name
+    container_name: springboot-mongodb-k8s-app-container
+    ports:
+     #- "$LOCAL_PORT:$DOCKER_PORT"
+      - 8080:8080
+    links:
+      - springboot-mongodb # service name of our mongo-db which we create above in this file.

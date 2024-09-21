@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: docker-basic-assignment-backend-app
+  labels:
+    app: docker-basic-assignment-app
+    tier: backend
+spec:
+  replicas: 4
+  template:
+    metadata:
+      name: docker-basic-assignment-app-pod
+      labels:
+        app: docker-basic-assignment-app
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+  selector:
+    matchLabels:
+      app: docker-basic-assignment-app

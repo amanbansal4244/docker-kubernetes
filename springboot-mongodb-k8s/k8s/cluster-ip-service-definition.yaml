@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: docker-basic-assignment-service-app-metadata
+  labels:
+    app: docker-basic-assignment-service-app
+spec:
+  type: ClusterIP
+  ports:
+    - name: http # because we are going to send http request only.
+      port: 80
+      targetPort: 8080
+  selector:
+    app: docker-basic-assignment-app
